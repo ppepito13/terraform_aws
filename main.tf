@@ -51,3 +51,21 @@ resource "aws_iam_role" "mypython_lambda_role" {
   name               = "mypython_lambda_role"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
 }
+
+resource "aws_sqs_queue" "main_queue" {
+  name             = "my-main-queue"
+  delay_seconds    = 30
+  max_message_size = 2048
+  tags = {
+    Environment = "dev"
+  }
+}
+
+resource "aws_sqs_queue" "dlq_queue" {
+  name             = "my-dlq-queue"
+  delay_seconds    = 30
+  max_message_size = 2048
+  tags = {
+    Environment = "dev"
+  }
+}
