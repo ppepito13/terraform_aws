@@ -27,6 +27,18 @@ data "aws_iam_policy_document" "assume_role" {
   }
 }
 
+data "aws_iam_policy_document" "sqs_role" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+      "sqs:GetQueueAttributes"
+    ]
+    resources = ["*"]
+  }
+}
+
 data "archive_file" "myzip" {
   type        = "zip"
   source_file = "main.py"
@@ -37,6 +49,12 @@ data "archive_file" "myzip" {
 provider "aws" {
   region = var.aws_region
 }
+
+# Create resources: 
+# - python-based lambda function, 
+# - IAM role, 
+# - SQS queues, 
+# - SQS trigger
 
 resource "aws_lambda_function" "mypython_lambda" {
   filename         = "main.zip"
@@ -50,6 +68,10 @@ resource "aws_lambda_function" "mypython_lambda" {
 resource "aws_iam_role" "mypython_lambda_role" {
   name               = "mypython_lambda_role"
   assume_role_policy = data.aws_iam_policy_document.assume_role.json
+  inline_policy {
+    name   = "sqs-policy"
+    policy = data.aws_iam_policy_document.sqs_role.json
+  }
 }
 
 resource "aws_sqs_queue" "main_queue" {
