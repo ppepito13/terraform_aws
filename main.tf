@@ -39,11 +39,12 @@ provider "aws" {
 }
 
 resource "aws_lambda_function" "mypython_lambda" {
-  filename      = "main.zip"
-  function_name = "mypython_lambda_test"
-  role          = aws_iam_role.mypython_lambda_role.arn
-  handler       = "main.lambda_handler"
-  runtime       = "python3.10"
+  filename         = "main.zip"
+  function_name    = "mypython_lambda_test"
+  role             = aws_iam_role.mypython_lambda_role.arn
+  handler          = "main.lambda_handler"
+  runtime          = "python3.10"
+  source_code_hash = "data.archive_file.myzip.output_base64sha256"
 }
 
 resource "aws_iam_role" "mypython_lambda_role" {
