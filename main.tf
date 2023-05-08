@@ -13,6 +13,14 @@ variable "aws_region" {
   default = "eu-central-1"
 }
 
+variable "environment" {
+  type = map(any)
+  default = {
+    dev  = "dev"
+    prod = "prod"
+  }
+}
+
 data "aws_iam_policy_document" "assume_role" {
   statement {
     effect = "Allow"
@@ -79,7 +87,7 @@ resource "aws_sqs_queue" "main_queue" {
   delay_seconds    = 30
   max_message_size = 2048
   tags = {
-    Environment = "dev"
+    Environment = var.environment[terraform.workspace]
   }
 }
 
@@ -88,7 +96,7 @@ resource "aws_sqs_queue" "dlq_queue" {
   delay_seconds    = 30
   max_message_size = 2048
   tags = {
-    Environment = "dev"
+    Environment = var.environment[terraform.workspace]
   }
 }
 
