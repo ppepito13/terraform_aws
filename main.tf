@@ -69,3 +69,8 @@ resource "aws_sqs_queue" "dlq_queue" {
     Environment = "dev"
   }
 }
+
+resource "aws_lambda_event_source_mapping" "sqs_lambda_trigger" {
+  event_source_arn = aws_sqs_queue.main_queue.arn
+  function_name    = aws_lambda_function.mypython_lambda.arn
+}
